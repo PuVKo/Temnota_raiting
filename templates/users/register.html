@@ -1,0 +1,23 @@
+{% extends "blade/maintemplate.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container my-5">
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Для отображения статистики в профиле вашего аккаунта логин (ник) должен <b>совпадать (регистр учитывается)</b> с ником в рейтинговой таблице. Если в вашем нике есть пробел, поставьте вместо него нижнее подчеркивание (например, Шальная_Императрица).</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-dark mt-2" type="submit">Регистрация</button>
+            </div>
+        </form>
+        <div class="border-top pt-3 mb-4">
+            <small class="text-muted">
+                Уже есть аккаунт? <a class="ml-2" href="login">Вход</a>
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock content %}

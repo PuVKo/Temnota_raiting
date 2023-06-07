@@ -1,0 +1,1282 @@
+{% extends "blade/admintemplate.html" %}
+
+{% block content %}
+{%load static%}
+
+<div class="px-4 my-5 text-left">
+    <h1 class="display-5 fw-bold">Редактирование игры</h1>
+
+    <p>После редактирования игр не забывайте перерассчитать рейтинг!</p>
+
+     <!--Лейбл при успешном внесении игры-->
+  <div class="col-lg-6 mx-auto">
+    <p class="lead mb-4" style="color:green">{{ outputlabel }}</p>
+  </div>
+
+</div>
+
+<div class="px-4 my-5 text-left container-md">
+  <form id="my_form" method="POST" action="{% url 'admingameseditsave' %}">
+    {% csrf_token %}
+
+    <!--Поля для игрока 1-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="p1" class="form-label">Ник игрока 1</label>
+      <input type="text" class="form-control" id="p1" name='p1' placeholder="" value="{{ game.p1 }}" required="">
+      <script>
+        $(document).ready(function() {
+          $('#p1').autocomplete({
+            source: function(request, response) {
+              $.ajax({
+                url: '/player-autocomplete/',
+                dataType: 'json',
+                data: {
+                  q: request.term
+                },
+                success: function(data) {
+                  response(data);
+                }
+              });
+            },
+            minLength: 1 // Количество символов, после которых начинается поиск
+          });
+        });
+      </script>
+    </div>
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="r1" class="form-label">Роль игрока 1</label>
+      <select id="r1" name="r1" class="form-select">
+        {% if game.r1 == "mir" %}
+        <option class="mir" value="mir" selected>Мирный</option>
+        <option class="ser" value="ser">Шериф</option>
+        <option class="maf" value="maf">Мафия</option>
+        <option class="don" value="don">Дон</option>
+        {% endif %}
+        {% if game.r1 == "ser" %}
+        <option class="mir" value="mir">Мирный</option>
+        <option class="ser" value="ser" selected>Шериф</option>
+        <option class="maf" value="maf">Мафия</option>
+        <option class="don" value="don">Дон</option>
+        {% endif %}
+        {% if game.r1 == "maf" %}
+        <option class="mir" value="mir">Мирный</option>
+        <option class="ser" value="ser">Шериф</option>
+        <option class="maf" value="maf" selected>Мафия</option>
+        <option class="don" value="don">Дон</option>
+        {% endif %}
+        {% if game.r1 == "don" %}
+        <option class="mir" value="mir">Мирный</option>
+        <option class="ser" value="ser">Шериф</option>
+        <option class="maf" value="maf">Мафия</option>
+        <option class="don" value="don" selected>Дон</option>
+        {% endif %}
+      </select>
+    </div>
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="d1" class="form-label">Доп игрока 1</label>
+      <input type="text" class="form-control" id="d1" name="d1" placeholder="" value="{{ game.d1 }}" required="">
+    </div>
+  </div>
+
+  <!--Поля для игрока 2-->
+  <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+    <label for="p2" class="form-label">Ник игрока 2</label>
+    <input type="text" class="form-control" id="p2" name='p2' placeholder="" value="{{ game.p2 }}" required="">
+    <script>
+      $(document).ready(function() {
+        $('#p2').autocomplete({
+          source: function(request, response) {
+            $.ajax({
+              url: '/player-autocomplete/',
+              dataType: 'json',
+              data: {
+                q: request.term
+              },
+              success: function(data) {
+                response(data);
+              }
+            });
+          },
+          minLength: 1 // Количество символов, после которых начинается поиск
+        });
+      });
+    </script>
+  </div>
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+    <label for="r2" class="form-label">Роль игрока 2</label>
+    <select id="r2" name="r2" class="form-select">
+      {% if game.r2 == "mir" %}
+      <option class="mir" value="mir" selected>Мирный</option>
+      <option class="ser" value="ser">Шериф</option>
+      <option class="maf" value="maf">Мафия</option>
+      <option class="don" value="don">Дон</option>
+      {% endif %}
+      {% if game.r2 == "ser" %}
+      <option class="mir" value="mir">Мирный</option>
+      <option class="ser" value="ser" selected>Шериф</option>
+      <option class="maf" value="maf">Мафия</option>
+      <option class="don" value="don">Дон</option>
+      {% endif %}
+      {% if game.r2 == "maf" %}
+      <option class="mir" value="mir">Мирный</option>
+      <option class="ser" value="ser">Шериф</option>
+      <option class="maf" value="maf" selected>Мафия</option>
+      <option class="don" value="don">Дон</option>
+      {% endif %}
+      {% if game.r2 == "don" %}
+      <option class="mir" value="mir">Мирный</option>
+      <option class="ser" value="ser">Шериф</option>
+      <option class="maf" value="maf">Мафия</option>
+      <option class="don" value="don" selected>Дон</option>
+      {% endif %}
+    </select>
+  </div>
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+    <label for="d2" class="form-label">Доп игрока 2</label>
+    <input type="text" class="form-control" id="d2" name="d2" placeholder="" value="{{ game.d2 }}" required="">
+  </div>
+</div>
+
+<!--Поля для игрока 3-->
+<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="p3" class="form-label">Ник игрока 3</label>
+  <input type="text" class="form-control" id="p3" name='p3' placeholder="" value="{{ game.p3 }}" required="">
+  <script>
+    $(document).ready(function() {
+      $('#p3').autocomplete({
+        source: function(request, response) {
+          $.ajax({
+            url: '/player-autocomplete/',
+            dataType: 'json',
+            data: {
+              q: request.term
+            },
+            success: function(data) {
+              response(data);
+            }
+          });
+        },
+        minLength: 1 // Количество символов, после которых начинается поиск
+      });
+    });
+  </script>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="r3" class="form-label">Роль игрока 3</label>
+  <select id="r3" name="r3" class="form-select">
+    {% if game.r3 == "mir" %}
+    <option class="mir" value="mir" selected>Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r3 == "ser" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser" selected>Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r3 == "maf" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf" selected>Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r3 == "don" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don" selected>Дон</option>
+    {% endif %}
+  </select>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="d3" class="form-label">Доп игрока 3</label>
+  <input type="text" class="form-control" id="d3" name="d3" placeholder="" value="{{ game.d3 }}" required="">
+</div>
+</div>
+
+<!--Поля для игрока 4-->
+<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="p4" class="form-label">Ник игрока 4</label>
+  <input type="text" class="form-control" id="p4" name='p4' placeholder="" value="{{ game.p4 }}" required="">
+  <script>
+    $(document).ready(function() {
+      $('#p4').autocomplete({
+        source: function(request, response) {
+          $.ajax({
+            url: '/player-autocomplete/',
+            dataType: 'json',
+            data: {
+              q: request.term
+            },
+            success: function(data) {
+              response(data);
+            }
+          });
+        },
+        minLength: 1 // Количество символов, после которых начинается поиск
+      });
+    });
+  </script>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="r4" class="form-label">Роль игрока 4</label>
+  <select id="r4" name="r4" class="form-select">
+    {% if game.r4 == "mir" %}
+    <option class="mir" value="mir" selected>Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r4 == "ser" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser" selected>Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r4 == "maf" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf" selected>Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r4 == "don" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don" selected>Дон</option>
+    {% endif %}
+  </select>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="d4" class="form-label">Доп игрока 4</label>
+  <input type="text" class="form-control" id="d4" name="d4" placeholder="" value="{{ game.d4 }}" required="">
+</div>
+</div>
+
+<!--Поля для игрока 5-->
+<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="p5" class="form-label">Ник игрока 5</label>
+  <input type="text" class="form-control" id="p5" name='p5' placeholder="" value="{{ game.p5 }}" required="">
+  <script>
+    $(document).ready(function() {
+      $('#p5').autocomplete({
+        source: function(request, response) {
+          $.ajax({
+            url: '/player-autocomplete/',
+            dataType: 'json',
+            data: {
+              q: request.term
+            },
+            success: function(data) {
+              response(data);
+            }
+          });
+        },
+        minLength: 1 // Количество символов, после которых начинается поиск
+      });
+    });
+  </script>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="r5" class="form-label">Роль игрока 5</label>
+  <select id="r5" name="r5" class="form-select">
+    {% if game.r5 == "mir" %}
+    <option class="mir" value="mir" selected>Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r5 == "ser" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser" selected>Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r5 == "maf" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf" selected>Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r5 == "don" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don" selected>Дон</option>
+    {% endif %}
+  </select>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="d5" class="form-label">Доп игрока 5</label>
+  <input type="text" class="form-control" id="d5" name="d5" placeholder="" value="{{ game.d5 }}" required="">
+</div>
+</div>
+
+<!--Поля для игрока 6-->
+<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="p6" class="form-label">Ник игрока 6</label>
+  <input type="text" class="form-control" id="p6" name='p6' placeholder="" value="{{ game.p6 }}" required="">
+  <script>
+    $(document).ready(function() {
+      $('#p6').autocomplete({
+        source: function(request, response) {
+          $.ajax({
+            url: '/player-autocomplete/',
+            dataType: 'json',
+            data: {
+              q: request.term
+            },
+            success: function(data) {
+              response(data);
+            }
+          });
+        },
+        minLength: 1 // Количество символов, после которых начинается поиск
+      });
+    });
+  </script>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="r6" class="form-label">Роль игрока 6</label>
+  <select id="r6" name="r6" class="form-select">
+    {% if game.r6 == "mir" %}
+    <option class="mir" value="mir" selected>Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r6 == "ser" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser" selected>Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r6 == "maf" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf" selected>Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r6 == "don" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don" selected>Дон</option>
+    {% endif %}
+  </select>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="d6" class="form-label">Доп игрока 6</label>
+  <input type="text" class="form-control" id="d6" name="d6" placeholder="" value="{{ game.d6 }}" required="">
+</div>
+</div>
+
+<!--Поля для игрока 1-->
+<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="p7" class="form-label">Ник игрока 7</label>
+  <input type="text" class="form-control" id="p7" name='p7' placeholder="" value="{{ game.p7 }}" required="">
+  <script>
+    $(document).ready(function() {
+      $('#p7').autocomplete({
+        source: function(request, response) {
+          $.ajax({
+            url: '/player-autocomplete/',
+            dataType: 'json',
+            data: {
+              q: request.term
+            },
+            success: function(data) {
+              response(data);
+            }
+          });
+        },
+        minLength: 1 // Количество символов, после которых начинается поиск
+      });
+    });
+  </script>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="r7" class="form-label">Роль игрока 7</label>
+  <select id="r7" name="r7" class="form-select">
+    {% if game.r7 == "mir" %}
+    <option class="mir" value="mir" selected>Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r7 == "ser" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser" selected>Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r7 == "maf" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf" selected>Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r7 == "don" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don" selected>Дон</option>
+    {% endif %}
+  </select>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="d7" class="form-label">Доп игрока 7</label>
+  <input type="text" class="form-control" id="d7" name="d7" placeholder="" value="{{ game.d7 }}" required="">
+</div>
+</div>
+
+<!--Поля для игрока 8-->
+<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="p8" class="form-label">Ник игрока 8</label>
+  <input type="text" class="form-control" id="p8" name='p8' placeholder="" value="{{ game.p8 }}" required="">
+  <script>
+    $(document).ready(function() {
+      $('#p8').autocomplete({
+        source: function(request, response) {
+          $.ajax({
+            url: '/player-autocomplete/',
+            dataType: 'json',
+            data: {
+              q: request.term
+            },
+            success: function(data) {
+              response(data);
+            }
+          });
+        },
+        minLength: 1 // Количество символов, после которых начинается поиск
+      });
+    });
+  </script>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="r8" class="form-label">Роль игрока 8</label>
+  <select id="r8" name="r8" class="form-select">
+    {% if game.r8 == "mir" %}
+    <option class="mir" value="mir" selected>Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r8 == "ser" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser" selected>Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r8 == "maf" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf" selected>Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r8 == "don" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don" selected>Дон</option>
+    {% endif %}
+  </select>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="d8" class="form-label">Доп игрока 8</label>
+  <input type="text" class="form-control" id="d8" name="d8" placeholder="" value="{{ game.d8 }}" required="">
+</div>
+</div>
+
+<!--Поля для игрока 9-->
+<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="p9" class="form-label">Ник игрока 9</label>
+  <input type="text" class="form-control" id="p9" name='p9' placeholder="" value="{{ game.p9 }}" required="">
+  <script>
+    $(document).ready(function() {
+      $('#p9').autocomplete({
+        source: function(request, response) {
+          $.ajax({
+            url: '/player-autocomplete/',
+            dataType: 'json',
+            data: {
+              q: request.term
+            },
+            success: function(data) {
+              response(data);
+            }
+          });
+        },
+        minLength: 1 // Количество символов, после которых начинается поиск
+      });
+    });
+  </script>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="r9" class="form-label">Роль игрока 9</label>
+  <select id="r9" name="r9" class="form-select">
+    {% if game.r9 == "mir" %}
+    <option class="mir" value="mir" selected>Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r9 == "ser" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser" selected>Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r9 == "maf" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf" selected>Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r9 == "don" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don" selected>Дон</option>
+    {% endif %}
+  </select>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="d9" class="form-label">Доп игрока 9</label>
+  <input type="text" class="form-control" id="d9" name="d9" placeholder="" value="{{ game.d9 }}" required="">
+</div>
+</div>
+
+<!--Поля для игрока 10-->
+<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+  <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="p10" class="form-label">Ник игрока 10</label>
+  <input type="text" class="form-control" id="p10" name='p10' placeholder="" value="{{ game.p10 }}" required="">
+  <script>
+    $(document).ready(function() {
+      $('#p10').autocomplete({
+        source: function(request, response) {
+          $.ajax({
+            url: '/player-autocomplete/',
+            dataType: 'json',
+            data: {
+              q: request.term
+            },
+            success: function(data) {
+              response(data);
+            }
+          });
+        },
+        minLength: 1 // Количество символов, после которых начинается поиск
+      });
+    });
+  </script>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="r10" class="form-label">Роль игрока 10</label>
+  <select id="r10" name="r10" class="form-select">
+    {% if game.r10 == "mir" %}
+    <option class="mir" value="mir" selected>Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r10 == "ser" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser" selected>Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r10 == "maf" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf" selected>Мафия</option>
+    <option class="don" value="don">Дон</option>
+    {% endif %}
+    {% if game.r10 == "don" %}
+    <option class="mir" value="mir">Мирный</option>
+    <option class="ser" value="ser">Шериф</option>
+    <option class="maf" value="maf">Мафия</option>
+    <option class="don" value="don" selected>Дон</option>
+    {% endif %}
+  </select>
+</div>
+<div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+  <label for="d10" class="form-label">Доп игрока 10</label>
+  <input type="text" class="form-control" id="d10" name="d10" placeholder="" value="{{ game.d10 }}" required="">
+</div>
+</div>
+  
+
+    <!--Лучший ход-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+    <!--Первое число лучшего хода-->
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="lh1" class="form-label">ЛХ 1</label>
+      <select id="lh1" name="lh1" class="form-select">
+        {% if game.lh1 == 0 %}
+        <option value="0" selected>0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 1 %}
+        <option value="0">0</option>
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 2 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 3 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 4 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 5 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5" selected>5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 6 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6" selected>6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 7 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7" selected>7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 8 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8" selected>8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 9 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9" selected>9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh1 == 10 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10" selected>10</option>
+        {% endif %}
+      </select>
+    </div>
+    <!--Второе число лучшего хода-->
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="lh2" class="form-label">ЛХ 2</label>
+      <select id="lh2" name="lh2" class="form-select">
+        {% if game.lh2 == 0 %}
+        <option value="0" selected>0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 1 %}
+        <option value="0">0</option>
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 2 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 3 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 4 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 5 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5" selected>5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 6 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6" selected>6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 7 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7" selected>7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 8 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8" selected>8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 9 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9" selected>9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh2 == 10 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10" selected>10</option>
+        {% endif %}
+      </select>
+    </div>
+    <!--Третье число лучшего хода-->
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="lh3" class="form-label">ЛХ 3</label>
+      <select id="lh3" name="lh3" class="form-select">
+        {% if game.lh3 == 0 %}
+        <option value="0" selected>0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 1 %}
+        <option value="0">0</option>
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 2 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 3 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 4 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 5 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5" selected>5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 6 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6" selected>6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 7 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7" selected>7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 8 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8" selected>8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 9 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9" selected>9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.lh3 == 10 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10" selected>10</option>
+        {% endif %}
+      </select>
+    </div>
+    <!--Номер первоубиенного-->
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="p_lh" class="form-label">Номер первоубиенного</label>
+      <select id="p_lh" name="p_lh" class="form-select">
+        {% if game.p_lh == 0 %}
+        <option value="0" selected>0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 1 %}
+        <option value="0">0</option>
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 2 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 3 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 4 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 5 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5" selected>5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 6 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6" selected>6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 7 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7" selected>7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 8 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8" selected>8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 9 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9" selected>9</option>
+        <option value="10">10</option>
+        {% endif %}
+        {% if game.p_lh == 10 %}
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10" selected>10</option>
+        {% endif %}
+      </select>
+    </div>
+  </div>
+
+    <!--Победившая команда-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="winner" class="form-label">Победившая команда</label>
+      <select id="winner" name="winner" class="form-select">
+        {% if game.winner == "mir" %}
+        <option value="mir" selected>Мирные</option>
+        <option value="maf">Мафия</option>
+        <option value="not">Ничья</option>
+        {% endif %}
+        {% if game.winner == "maf" %}
+        <option value="mir">Мирные</option>
+        <option value="maf" selected>Мафия</option>
+        <option value="not">Ничья</option>
+        {% endif %}
+        {% if game.winner == "not" %}
+        <option value="mir">Мирные</option>
+        <option value="maf">Мафия</option>
+        <option value="not" selected>Ничья</option>
+        {% endif %}
+      </select>
+    </div>
+  </div>
+
+  <!-- Сохранение id и даты игры -->
+  <input type="text" hidden class="form-control" id="id" name='id' placeholder="{{ game.id }}" value="{{ game.id }}">
+
+  <!--Кнопка отправки-->
+  <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <button type="submit" class="btn btn-outline-dark">Сохранить</button>
+  </div>
+</div>
+
+
+  </form>
+</div>
+
+<script>
+  for (let i = 1; i <= 10; i++) {
+  const select = document.getElementById('r' + i);
+  const selectedOption = select.options[select.selectedIndex];
+  selectedOption.classList.add('selected');
+  select.classList.add(selectedOption.classList[0]);
+  
+  select.addEventListener('change', function() {
+    const previousSelectedOption = this.querySelector('.selected');
+    if (previousSelectedOption) {
+      previousSelectedOption.classList.remove('selected');
+      this.classList.remove(previousSelectedOption.classList[0]);
+    }
+    const selectedOption = this.options[this.selectedIndex];
+    selectedOption.classList.add('selected');
+    this.classList.add(selectedOption.classList[0]);
+  });
+}
+</script>
+
+</div>
+{% endblock %}

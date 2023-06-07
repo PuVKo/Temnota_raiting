@@ -1,0 +1,197 @@
+{% extends "blade/maintemplate.html" %}
+
+{% block content %}
+{%load static%}
+
+<div class="px-4 my-5 text-center">
+  <h1 class="display-5 fw-bold">Сводный рейтинг за {{ month }} {{ currectyear }} (Всего игр: {{ gamecounter }})</h1>
+  <div class="col-lg-6 mx-auto">
+    
+    <p class="lead mb-4">Выберите месяц или сезон</p>
+
+    <div class="row">
+      <div class="col-md-6 px-4">
+        <form id="my_form" method="POST" action="{% url 'index' %}">
+          {% csrf_token %}
+          <input type="text" hidden class="form-control" id="type" name='type' placeholder="month" value="month">
+          <select id="my_dropdown" name="selected_option" class="form-select">
+            <option selected>Выбрать месяц</option>
+            {% for obj2 in season %}
+              <option value="{{ obj2.id }}">{{ obj2.month }} {{ obj2.year }}</option>
+            {% endfor %}
+          </select>
+        </form>
+    </div>
+
+    <div class="col-md-6 px-4">
+      <form id="my_form2" method="POST" action="{% url 'index' %}">
+        {% csrf_token %}
+        <input type="text" hidden class="form-control" id="type" name='type' placeholder="season" value="season">
+        <select id="my_dropdown2" name="selected_option" class="form-select">
+          <option selected>Выбрать сезон</option>
+          {% for obj2 in fullseason %}
+            <option value="{{ obj2.id }}">{{ obj2.season }} {{ obj2.year }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+    </div>
+    
+  </div>
+</div>
+
+  {% if table %}
+
+  
+  {% if user.is_authenticated %}
+    {% for obj in table %}
+    {% if obj.nick == user.username %}
+    <div class="px-4 my-5 text-center">
+      <h3 class="display-5 fw-bold p-2" style="color:">Ваша статистика</h3>
+      <div class="table-responsive">
+      <table class="table table-dark table-striped-columns table-hover">
+          <thead>
+              <tr class="align-middle">
+                <th scope="col">№</th>
+                <th scope="col">Ник</th>
+                <th scope="col">Коэф.</th>
+                <th scope="col">Баллы</th>
+                <th scope="col">Игры</th>
+                <th scope="col">% побед</th>
+                <th scope="col">Сред. балл</th>
+                <th scope="col">Победы</th>
+                <th scope="col">Поражения</th>
+                <th scope="col">Ничья</th>
+                <th scope="col" colspan="2">Шер</th>
+                <th scope="col" colspan="2">Мир</th>
+                <th scope="col" colspan="2">Дон</th>
+                <th scope="col" colspan="2">Маф</th>
+                <th scope="col">Доп. баллы</th>
+                <th scope="col">Штраф</th>
+                <th scope="col">Компенсация</th>
+                <th scope="col">2 черн</th>
+                <th scope="col">3 черн</th>
+                <th scope="col">3 красн</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="align-middle">
+                {% endif %}
+              {% endfor %}             
+                {% for obj in table %}
+                {% if obj.nick == user.username %}
+                <td style="width: 45px">{{ forloop.counter }}</td>
+                <td style="text-align: left; width: 150px">{{ obj.nick }}</td>
+                <td style="background-color: #216477; width: 65px">{{ obj.itog }}</td>
+                <td style="width: 85px">{{ obj.ball }}</td>
+                <td style="width: 70px">{{ obj.total_game }}</td>
+                <td style="width: 100px">{{ obj.winrate }}</td>
+                <td style="width: 120px">{{ obj.med_ball }}</td>
+                <td style="background-color: red; width: 95px">{{ obj.total_win }}</td>
+                <td style="background-color: black; width: 130px">{{ obj.losses }}</td>
+                <td style="background-color: #ffc56f; color: black; width: 80px">{{ obj.nowinner }}</td>
+                <td style="background-color: red; width: 40px">{{ obj.sherifwin }}</td>
+                <td style="background-color: black; width: 40px">{{ obj.sherifloose }}</td>
+                <td style="background-color: red; width: 40px">{{ obj.mirwin }}</td>
+                <td style="background-color: black; width: 40px">{{ obj.mirloose }}</td>
+                <td style="background-color: red; width: 40px">{{ obj.donwin }}</td>
+                <td style="background-color: black; width: 40px">{{ obj.donloose }}</td>
+                <td style="background-color: red; width: 40px">{{ obj.mafwin }}</td>
+                <td style="background-color: black; width: 40px">{{ obj.mafloose }}</td>
+                <td style="background-color: #6f91ff; color: black; width: 125px">{{ obj.dop|floatformat:2 }}</td>
+                <td style="background-color: #ffc56f; color: black; width: 75px">{{ obj.straf|floatformat:2 }}</td>
+                <td style="background-color: #ffa230; color: black; width: 125px">{{ obj.compens }}</td>
+                <td style="background-color: black; width: 90px">{{ obj.twomaf }}</td>
+                <td style="background-color: black; width: 90px">{{ obj.threemaf }}</td>
+                <td style="background-color: red; color: white; width: 90px">{{ obj.threered }}</td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+        </table>
+  </div>
+</div>
+    {% endif %}
+    <div class="px-4 my-5 text-center">
+    <h3 class="display-5 fw-bold p-2" style="color:">Рейтинговая таблица</h3>
+    <div class="table-responsive">
+    <table class="table table-dark table-striped-columns table-hover">
+        <thead>
+            <tr class="align-middle">
+              <th scope="col">№</th>
+              <th scope="col">Ник</th>
+              <th scope="col">Коэф.</th>
+              <th scope="col">Баллы</th>
+              <th scope="col">Игры</th>
+              <th scope="col">% побед</th>
+              <th scope="col">Сред. балл</th>
+              <th scope="col">Победы</th>
+              <th scope="col">Поражения</th>
+              <th scope="col">Ничья</th>
+              <th scope="col" colspan="2">Шер</th>
+              <th scope="col" colspan="2">Мир</th>
+              <th scope="col" colspan="2">Дон</th>
+              <th scope="col" colspan="2">Маф</th>
+              <th scope="col">Доп. баллы</th>
+              <th scope="col">Штраф</th>
+              <th scope="col">Компенсация</th>
+              <th scope="col">2 черн</th>
+              <th scope="col">3 черн</th>
+              <th scope="col">3 красн</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="align-middle"> 
+              {% for obj in table %}
+              <td style="width: 45px">{{ forloop.counter }}</td>
+              <td style="text-align: left; width: 150px">{{ obj.nick }}</td>
+              <td style="background-color: #216477; width: 65px">{{ obj.itog }}</td>
+              <td style="width: 85px">{{ obj.ball }}</td>
+              <td style="width: 70px">{{ obj.total_game }}</td>
+              <td style="width: 100px">{{ obj.winrate }}</td>
+              <td style="width: 120px">{{ obj.med_ball }}</td>
+              <td style="background-color: red; width: 95px">{{ obj.total_win }}</td>
+              <td style="background-color: black; width: 130px">{{ obj.losses }}</td>
+              <td style="background-color: #ffc56f; color: black; width: 80px">{{ obj.nowinner }}</td>
+              <td style="background-color: red; width: 40px">{{ obj.sherifwin }}</td>
+              <td style="background-color: black; width: 40px">{{ obj.sherifloose }}</td>
+              <td style="background-color: red; width: 40px">{{ obj.mirwin }}</td>
+              <td style="background-color: black; width: 40px">{{ obj.mirloose }}</td>
+              <td style="background-color: red; width: 40px">{{ obj.donwin }}</td>
+              <td style="background-color: black; width: 40px">{{ obj.donloose }}</td>
+              <td style="background-color: red; width: 40px">{{ obj.mafwin }}</td>
+              <td style="background-color: black; width: 40px">{{ obj.mafloose }}</td>
+              <td style="background-color: #6f91ff; color: black; width: 125px">{{ obj.dop|floatformat:2 }}</td>
+              <td style="background-color: #ffc56f; color: black; width: 75px">{{ obj.straf|floatformat:2 }}</td>
+              <td style="background-color: #ffa230; color: black; width: 125px">{{ obj.compens }}</td>
+              <td style="background-color: black; width: 90px">{{ obj.twomaf }}</td>
+              <td style="background-color: black; width: 90px">{{ obj.threemaf }}</td>
+              <td style="background-color: red; color: white; width: 90px">{{ obj.threered }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="margin-top:100px"> 
+      <div class="px-4 my-5 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" style="padding-bottom:20px" width="150" height="150" fill="currentColor" class="bi bi-database-x" viewBox="0 0 16 16">
+          <path d="M12.096 6.223A4.92 4.92 0 0 0 13 5.698V7c0 .289-.213.654-.753 1.007a4.493 4.493 0 0 1 1.753.25V4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16c.536 0 1.058-.034 1.555-.097a4.525 4.525 0 0 1-.813-.927C8.5 14.992 8.252 15 8 15c-1.464 0-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13h.027a4.552 4.552 0 0 1 0-1H8c-1.464 0-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10c.262 0 .52-.008.774-.024a4.525 4.525 0 0 1 1.102-1.132C9.298 8.944 8.666 9 8 9c-1.464 0-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777ZM3 4c0-.374.356-.875 1.318-1.313C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4Z"/>
+          <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm-.646-4.854.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 0 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 .708-.708Z"/>
+        </svg>
+        <h2 class="display-5 fw-bold" style="color:">Игры за выбранный сезон еще не были внесены</h2>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+      <script>
+        document.getElementById("my_dropdown").addEventListener("change", function() {
+            document.getElementById("my_form").submit();
+        });
+        document.getElementById("my_dropdown2").addEventListener("change", function() {
+          document.getElementById("my_form2").submit();
+      });
+      </script>
+    </div>
+{% endblock %}

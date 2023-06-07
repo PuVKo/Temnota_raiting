@@ -1,0 +1,72 @@
+body {
+  overflow-y: scroll;
+  padding-right: 0 !important;
+
+}
+
+.paddings {
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+.table-dark {
+    font-size: 12pt;
+    border-color: #c5c5c5;
+    text-align: center;
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    .table {
+      font-size: 14px;
+    }
+
+    .btn {
+      font-size: 14px;
+    }
+
+    .display-5 {
+      font-size: 24px;
+    }
+
+}
+
+select.selected {
+    background-color: red;
+  }
+  .mir {
+    background-color: white;
+    color: black;
+  }
+  .ser {
+    background-color: blue;
+    color: white;
+  }
+  
+  .maf {
+    background-color: purple;
+    color: white;
+  }
+  
+  .don {
+    background-color: black;
+    color: white;
+  }
+
+li a {
+  color: #6c757d;
+  font-size: 18px;
+}
+
+.wrappers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-center {
+  text-align: center;
+}

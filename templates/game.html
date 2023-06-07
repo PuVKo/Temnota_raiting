@@ -1,0 +1,561 @@
+{% extends "blade/admintemplate.html" %}
+
+{% block content %}
+{%load static%}
+
+<div class="px-4 my-5 text-left">
+    <h1 class="display-5 fw-bold">Внесение игр</h1>
+    
+    <form id="my_form" method="POST" action="{% url 'raitingcalculate' %}">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-sm-3"> 
+          <select id="my_dropdown" name="selected_option" class="form-select">
+            <option value="{{ season.0.id }}">{{ season.0.month }} {{ season.0.year }}</option>
+            {% for obj1 in season|slice:"1:" %}
+              <option value="{{ obj1.id }}">{{ obj1.month }} {{ obj1.year }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-3">
+          <button type="submit" class="btn btn-outline-dark" style="margin-left:10px !important">Рассчитать рейтинг</button>
+        </div>
+      </div>
+    </form>
+
+    <p>Чтобы внести игру последовательно заполните:</p>
+    <p>1. Дату игры</p>
+    <p>2. Ники всех игроков в соответствующие поля. Важно убедиться, что ники написаны одинаково для каждого игрока, чтобы избежать ошибок. 
+      Для этого можно использовать автоподстановку ников: когда вы начинаете писать ник, система автоматически предлагает варианты для выбора.</p>
+    <p>Если вы не можете найти игрока с помощью поиска, рекомендуется перейти на вкладку <b>"Игроки клуба"</b>, тщательно проверить список уже
+       существующих игроков и, если необходимого игрока нет в списке, добавить его.</p>
+    <p>3. Выберите роль и, при необходимости, измените количество дополнительных баллов для каждого игрока. Обратите внимание, что если в поле дополнительных баллов ввести 
+      отрицательное значение, то система запишет его как штраф для данного игрока.</p>
+    <p>4. Заполните поля лучшего хода и выберите победившую команду.</p>
+    <p>5. Нажмите кнопку сохранить.</p>
+
+     <!--Лейбл при успешном внесении игры-->
+  <div class="col-lg-6 mx-auto">
+    <p class="lead mb-4" style="color:green">{{ outputlabel }}</p>
+  </div>
+
+</div>
+
+<div class="px-4 my-5 text-left container-md">
+  <form id="my_form" method="POST" action="{% url 'game' %}">
+    {% csrf_token %}
+    <!--Дата игры-->
+  <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="gamedate" class="form-label">Дата игры</label>
+      <input type="date" class="form-control" id="gamedate" name='gamedate' placeholder="" value="" required="">
+    </div>
+  </div>
+
+    <!--Поля для игрока 1-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="p1" class="form-label">Ник игрока 1</label>
+      <input type="text" class="form-control" id="p1" name='p1' placeholder="" value="" required="">
+      <script>
+        $(document).ready(function() {
+          $('#p1').autocomplete({
+            source: function(request, response) {
+              $.ajax({
+                url: '/player-autocomplete/',
+                dataType: 'json',
+                data: {
+                  q: request.term
+                },
+                success: function(data) {
+                  response(data);
+                }
+              });
+            },
+            minLength: 1 // Количество символов, после которых начинается поиск
+          });
+        });
+      </script>
+    </div>
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="r1" class="form-label">Роль игрока 1</label>
+      <select id="r1" name="r1" class="form-select">
+        <option class="mir" value="mir" selected>Мирный</option>
+        <option class="ser" value="ser">Шериф</option>
+        <option class="maf" value="maf">Мафия</option>
+        <option class="don" value="don">Дон</option>
+      </select>
+    </div>
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="d1" class="form-label">Доп игрока 1</label>
+      <input type="text" class="form-control" id="d1" name="d1" placeholder="" value="0.0" required="">
+    </div>
+  </div>
+  <!--Поля для игрока 2-->
+  <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="p2" class="form-label">Ник игрока 2</label>
+      <input type="text" class="form-control" id="p2" name='p2' placeholder="" value="" required="">
+      <script>
+        $(document).ready(function() {
+          $('#p2').autocomplete({
+            source: function(request, response) {
+              $.ajax({
+                url: '/player-autocomplete/',
+                dataType: 'json',
+                data: {
+                  q: request.term
+                },
+                success: function(data) {
+                  response(data);
+                }
+              });
+            },
+            minLength: 1 // Количество символов, после которых начинается поиск
+          });
+        });
+      </script>
+    </div>
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="r2" class="form-label">Роль игрока 2</label>
+      <select id="r2" name="r2" class="form-select">
+        <option class="mir" value="mir" selected>Мирный</option>
+        <option class="ser" value="ser">Шериф</option>
+        <option class="maf" value="maf">Мафия</option>
+        <option class="don" value="don">Дон</option>
+      </select>
+    </div>
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="d2" class="form-label">Доп игрока 2</label>
+      <input type="text" class="form-control" id="d2" name="d2" placeholder="" value="0.0" required="">
+    </div>
+  </div>
+    <!--Поля для игрока 3-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="p3" class="form-label">Ник игрока 3</label>
+        <input type="text" class="form-control" id="p3" name='p3' placeholder="" value="" required="">
+        <script>
+          $(document).ready(function() {
+            $('#p3').autocomplete({
+              source: function(request, response) {
+                $.ajax({
+                  url: '/player-autocomplete/',
+                  dataType: 'json',
+                  data: {
+                    q: request.term
+                  },
+                  success: function(data) {
+                    response(data);
+                  }
+                });
+              },
+              minLength: 1 // Количество символов, после которых начинается поиск
+            });
+          });
+        </script>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="r3" class="form-label">Роль игрока 3</label>
+        <select id="r3" name="r3" class="form-select">
+          <option class="mir" value="mir" selected>Мирный</option>
+          <option class="ser" value="ser">Шериф</option>
+          <option class="maf" value="maf">Мафия</option>
+          <option class="don" value="don">Дон</option>
+        </select>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="d3" class="form-label">Доп игрока 3</label>
+        <input type="text" class="form-control" id="d3" name="d3" placeholder="" value="0.0" required="">
+      </div>
+    </div>
+    <!--Поля для игрока 4-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="p4" class="form-label">Ник игрока 4</label>
+        <input type="text" class="form-control" id="p4" name='p4' placeholder="" value="" required="">  <script>
+          $(document).ready(function() {
+            $('#p4').autocomplete({
+              source: function(request, response) {
+                $.ajax({
+                  url: '/player-autocomplete/',
+                  dataType: 'json',
+                  data: {
+                    q: request.term
+                  },
+                  success: function(data) {
+                    response(data);
+                  }
+                });
+              },
+              minLength: 1 // Количество символов, после которых начинается поиск
+            });
+          });
+        </script>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="r4" class="form-label">Роль игрока 4</label>
+        <select id="r4" name="r4" class="form-select">
+          <option class="mir" value="mir" selected>Мирный</option>
+          <option class="ser" value="ser">Шериф</option>
+          <option class="maf" value="maf">Мафия</option>
+          <option class="don" value="don">Дон</option>
+        </select>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="d4" class="form-label">Доп игрока 4</label>
+        <input type="text" class="form-control" id="d4" name="d4" placeholder="" value="0.0" required="">
+      </div>
+    </div>
+    <!--Поля для игрока 5-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="p5" class="form-label">Ник игрока 5</label>
+        <input type="text" class="form-control" id="p5" name='p5' placeholder="" value="" required="">
+        <script>
+          $(document).ready(function() {
+            $('#p5').autocomplete({
+              source: function(request, response) {
+                $.ajax({
+                  url: '/player-autocomplete/',
+                  dataType: 'json',
+                  data: {
+                    q: request.term
+                  },
+                  success: function(data) {
+                    response(data);
+                  }
+                });
+              },
+              minLength: 1 // Количество символов, после которых начинается поиск
+            });
+          });
+        </script>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="r5" class="form-label">Роль игрока 5</label>
+        <select id="r5" name="r5" class="form-select">
+          <option class="mir" value="mir" selected>Мирный</option>
+          <option class="ser" value="ser">Шериф</option>
+          <option class="maf" value="maf">Мафия</option>
+          <option class="don" value="don">Дон</option>
+        </select>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="d5" class="form-label">Доп игрока 5</label>
+        <input type="text" class="form-control" id="d5" name="d5" placeholder="" value="0.0" required="">
+        <script>
+          $(document).ready(function() {
+            $('#p6').autocomplete({
+              source: function(request, response) {
+                $.ajax({
+                  url: '/player-autocomplete/',
+                  dataType: 'json',
+                  data: {
+                    q: request.term
+                  },
+                  success: function(data) {
+                    response(data);
+                  }
+                });
+              },
+              minLength: 1 // Количество символов, после которых начинается поиск
+            });
+          });
+        </script>
+      </div>
+    </div>
+    <!--Поля для игрока 6-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="p6" class="form-label">Ник игрока 6</label>
+        <input type="text" class="form-control" id="p6" name='p6' placeholder="" value="" required="">
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="r6" class="form-label">Роль игрока 6</label>
+        <select id="r6" name="r6" class="form-select">
+          <option class="mir" value="mir" selected>Мирный</option>
+          <option class="ser" value="ser">Шериф</option>
+          <option class="maf" value="maf">Мафия</option>
+          <option class="don" value="don">Дон</option>
+        </select>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="d6" class="form-label">Доп игрока 6</label>
+        <input type="text" class="form-control" id="d6" name="d6" placeholder="" value="0.0" required="">
+      </div>
+    </div>
+    <!--Поля для игрока 7-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="p7" class="form-label">Ник игрока 7</label>
+        <input type="text" class="form-control" id="p7" name='p7' placeholder="" value="" required="">
+        <script>
+          $(document).ready(function() {
+            $('#p7').autocomplete({
+              source: function(request, response) {
+                $.ajax({
+                  url: '/player-autocomplete/',
+                  dataType: 'json',
+                  data: {
+                    q: request.term
+                  },
+                  success: function(data) {
+                    response(data);
+                  }
+                });
+              },
+              minLength: 1 // Количество символов, после которых начинается поиск
+            });
+          });
+        </script>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="r7" class="form-label">Роль игрока 7</label>
+        <select id="r7" name="r7" class="form-select">
+          <option class="mir" value="mir" selected>Мирный</option>
+          <option class="ser" value="ser">Шериф</option>
+          <option class="maf" value="maf">Мафия</option>
+          <option class="don" value="don">Дон</option>
+        </select>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="d7" class="form-label">Доп игрока 7</label>
+        <input type="text" class="form-control" id="d7" name="d7" placeholder="" value="0.0" required="">
+      </div>
+    </div>
+  <!--Поля для игрока 8-->
+  <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="p8" class="form-label">Ник игрока 8</label>
+      <input type="text" class="form-control" id="p8" name='p8' placeholder="" value="" required="">
+      <script>
+        $(document).ready(function() {
+          $('#p8').autocomplete({
+            source: function(request, response) {
+              $.ajax({
+                url: '/player-autocomplete/',
+                dataType: 'json',
+                data: {
+                  q: request.term
+                },
+                success: function(data) {
+                  response(data);
+                }
+              });
+            },
+            minLength: 1 // Количество символов, после которых начинается поиск
+          });
+        });
+      </script>
+    </div>
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="r8" class="form-label">Роль игрока 8</label>
+      <select id="r8" name="r8" class="form-select">
+        <option class="mir" value="mir" selected>Мирный</option>
+        <option class="ser" value="ser">Шериф</option>
+        <option class="maf" value="maf">Мафия</option>
+        <option class="don" value="don">Дон</option>
+      </select>
+    </div>
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="d8" class="form-label">Доп игрока 8</label>
+      <input type="text" class="form-control" id="d8" name="d8" placeholder="" value="0.0" required="">
+    </div>
+  </div>
+    <!--Поля для игрока 9-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="p9" class="form-label">Ник игрока 9</label>
+        <input type="text" class="form-control" id="p9" name='p9' placeholder="" value="" required="">
+        <script>
+          $(document).ready(function() {
+            $('#p9').autocomplete({
+              source: function(request, response) {
+                $.ajax({
+                  url: '/player-autocomplete/',
+                  dataType: 'json',
+                  data: {
+                    q: request.term
+                  },
+                  success: function(data) {
+                    response(data);
+                  }
+                });
+              },
+              minLength: 1 // Количество символов, после которых начинается поиск
+            });
+          });
+        </script>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="r9" class="form-label">Роль игрока 9</label>
+        <select id="r9" name="r9" class="form-select">
+          <option class="mir" value="mir" selected>Мирный</option>
+          <option class="ser" value="ser">Шериф</option>
+          <option class="maf" value="maf">Мафия</option>
+          <option class="don" value="don">Дон</option>
+        </select>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="d9" class="form-label">Доп игрока 9</label>
+        <input type="text" class="form-control" id="d9" name="d9" placeholder="" value="0.0" required="">
+      </div>
+    </div>
+    <!--Поля для игрока 10-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="p10" class="form-label">Ник игрока 10</label>
+        <input type="text" class="form-control" id="p10" name='p10' placeholder="" value="" required="">
+        <script>
+          $(document).ready(function() {
+            $('#p10').autocomplete({
+              source: function(request, response) {
+                $.ajax({
+                  url: '/player-autocomplete/',
+                  dataType: 'json',
+                  data: {
+                    q: request.term
+                  },
+                  success: function(data) {
+                    response(data);
+                  }
+                });
+              },
+              minLength: 1 // Количество символов, после которых начинается поиск
+            });
+          });
+        </script>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="r10" class="form-label">Роль игрока 10</label>
+        <select id="r10" name="r10" class="form-select">
+          <option class="mir" value="mir" selected>Мирный</option>
+          <option class="ser" value="ser">Шериф</option>
+          <option class="maf" value="maf">Мафия</option>
+          <option class="don" value="don">Дон</option>
+        </select>
+      </div>
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+        <label for="d10" class="form-label">Доп игрока 10</label>
+        <input type="text" class="form-control" id="d10" name="d10" placeholder="" value="0.0" required="">
+      </div>
+    </div>
+
+    <!--Лучший ход-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+    <!--Первое число лучшего хода-->
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="lh1" class="form-label">ЛХ 1</label>
+      <select id="lh1" name="lh1" class="form-select">
+        <option value="0" selected>0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+    </div>
+    <!--Второе число лучшего хода-->
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="lh2" class="form-label">ЛХ 2</label>
+      <select id="lh2" name="lh2" class="form-select">
+        <option value="0" selected>0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+    </div>
+    <!--Третье число лучшего хода-->
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="lh3" class="form-label">ЛХ 3</label>
+      <select id="lh3" name="lh3" class="form-select">
+        <option value="0" selected>0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+    </div>
+    <!--Номер первоубиенного-->
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="p_lh" class="form-label">Номер первоубиенного</label>
+      <select id="p_lh" name="p_lh" class="form-select">
+        <option value="0" selected>0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+    </div>
+  </div>
+
+    <!--Победившая команда-->
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+      <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <label for="winner" class="form-label">Победившая команда</label>
+      <select id="winner" name="winner" class="form-select">
+        <option value="mir" selected>Мирные</option>
+        <option value="maf">Мафия</option>
+        <option value="not">Ничья</option>
+      </select>
+    </div>
+  </div>
+
+  <!--Кнопка отправки-->
+  <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start" style="margin-top:15px !important">
+    <div class="col-sm-6" style="padding-right: 10px !important; width: auto">
+      <button type="submit" class="btn btn-outline-dark">Сохранить</button>
+  </div>
+</div>
+
+
+  </form>
+</div>
+
+<script>
+  for (let i = 1; i <= 10; i++) {
+  const select = document.getElementById('r' + i);
+  const selectedOption = select.options[select.selectedIndex];
+  selectedOption.classList.add('selected');
+  select.classList.add(selectedOption.classList[0]);
+  
+  select.addEventListener('change', function() {
+    const previousSelectedOption = this.querySelector('.selected');
+    if (previousSelectedOption) {
+      previousSelectedOption.classList.remove('selected');
+      this.classList.remove(previousSelectedOption.classList[0]);
+    }
+    const selectedOption = this.options[this.selectedIndex];
+    selectedOption.classList.add('selected');
+    this.classList.add(selectedOption.classList[0]);
+  });
+}
+</script>
+
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+.login-form input[type=text], .login-form input[type=password] {
+    background-color: #f1f1f1;
+    color: #000;
+    padding: 12px 20px;
+    margin: 8px 0;
+    border-color: rgb(0, 0, 0);
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* настройка стилей для кнопки отправки на форме входа */
+.login-form button[type=submit] {
+    color: #212529;
+    border-color: #212529;
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    padding: 0.5rem 1.5rem;
+    font-size: 1.2rem;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.login-form button[type=submit]:hover { 
+    color: #fff;
+    background-color: #212529;
+    border-color: #212529;
+}
+
+/* настройка стилей для ссылки "Забыли пароль?" на форме входа */
+.login-form .password-reset-link {
+    display: block;
+    text-align: right;
+    margin-top: 12px;
+}
+
+/* настройка стилей для ошибок на форме входа */
+.login-form .errorlist {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.blockcenter{
+    text-align: center;
+  }

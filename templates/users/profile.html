@@ -1,0 +1,151 @@
+{% extends "blade/maintemplate.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container my-5">
+  {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="content-section">
+        <div class="media">
+        <legend class="border-bottom mb-4">Личный кабинет. На этой странице будут отображаться все игры с вашим участием.</legend>
+          <div class="media-body">
+            <h2 class="account-heading">Никнейм: {{ user.username }}</h2>
+            <p class="text-secondary">Электронная почта: {{ user.email }}</p>
+            <a href="changepassword" class="btn btn-outline-dark px-2">Сменить пароль</a>
+          </div>
+        </div>
+  
+    <!--Выбор сезона-->
+    <div class="px-4 my-5 text-center">
+      <h1 class="display-5 fw-bold">Список ваших игр за {{ month }} {{ currectyear }} (Всего игр: {{ gamecounter }})</h1>
+        <div class="col-lg-6 mx-auto">
+          
+          <p class="lead mb-4"></p>
+
+          <form id="my_form" method="POST" action="{% url 'profile' %}">
+            {% csrf_token %}
+            <div class="form-row" style="display: flex !important">
+              <div class="col p-2">
+                <select id="my_dropdown" name="selected_option" class="form-select">
+                  <option value="none" selected>Сезон</option>
+                  {% for obj2 in season %}
+                  <option value="{{ obj2.id }}">{{ obj2.month }} {{ obj2.year }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col p-2">
+                <input type="date" name="date" id="date" class="form-control" placeholder="Дата">
+              </div>
+                <button type="submit" class="btn btn-outline-dark my-2">Применить</button>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+
+{% if not games %}
+  <div style="margin-top:100px"> 
+    <div class="px-4 my-5 text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" style="padding-bottom:20px" width="150" height="150" fill="currentColor" class="bi bi-database-x" viewBox="0 0 16 16">
+        <path d="M12.096 6.223A4.92 4.92 0 0 0 13 5.698V7c0 .289-.213.654-.753 1.007a4.493 4.493 0 0 1 1.753.25V4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16c.536 0 1.058-.034 1.555-.097a4.525 4.525 0 0 1-.813-.927C8.5 14.992 8.252 15 8 15c-1.464 0-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13h.027a4.552 4.552 0 0 1 0-1H8c-1.464 0-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10c.262 0 .52-.008.774-.024a4.525 4.525 0 0 1 1.102-1.132C9.298 8.944 8.666 9 8 9c-1.464 0-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777ZM3 4c0-.374.356-.875 1.318-1.313C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4Z"/>
+        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm-.646-4.854.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 0 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 .708-.708Z"/>
+      </svg>
+      <h2 class="display-5 fw-bold" style="color:">Нам не удалось найти ваши игры по выбранным фильтрам</h2>
+      <p>Если ваши игры не отображаются в профиле, вероятно, вы допустили ошибку в написании никнейма. Обратитесь к президенту клуба (г-н Tops +7 (924) 316-50-08) за помощью.</p>
+      </div>
+    </div>
+  </div>
+{% else %} 
+
+  <div class="row row-cols-1 row-cols-md-3 px-4">
+
+    {% for obj in games %}
+      <div class="col">
+        <div class="card" style="margin:10px">
+          <div class="px-4 my-4">
+            <h5 class="card-title">Дата игры: <b>{{ obj.gamedate }}</b></h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">Победившая команда: <b>{{ obj.winner }}</b></h6>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-center">№</th>
+                    <th scope="col">Никнейм</th>
+                    <th scope="col">Роль</th>
+                    <th scope="col" class="text-center">Доп</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p style="margin-bottom: 0px !important" class="text-center">1</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">2</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">3</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">4</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">5</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">6</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">7</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">8</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">9</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">10</p>
+                    </td>
+                    <td>
+                      <p style="margin-bottom: 0px !important">{{ obj.p1 }}</p>
+                      <p style="margin-bottom: 0px !important">{{ obj.p2 }}</p>
+                      <p style="margin-bottom: 0px !important">{{ obj.p3 }}</p>
+                      <p style="margin-bottom: 0px !important">{{ obj.p4 }}</p>
+                      <p style="margin-bottom: 0px !important">{{ obj.p5 }}</p>
+                      <p style="margin-bottom: 0px !important">{{ obj.p6 }}</p>
+                      <p style="margin-bottom: 0px !important">{{ obj.p7 }}</p>
+                      <p style="margin-bottom: 0px !important">{{ obj.p8 }}</p>
+                      <p style="margin-bottom: 0px !important">{{ obj.p9 }}</p>
+                      <p style="margin-bottom: 0px !important">{{ obj.p10 }}</p>
+                    </td>
+                    <td>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r1 }}</p>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r2 }}</p>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r3 }}</p>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r4 }}</p>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r5 }}</p>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r6 }}</p>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r7 }}</p>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r8 }}</p>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r9 }}</p>
+                      <p style="margin-bottom: 0px !important" >{{ obj.r10 }}</p>
+                    </td>
+                    <td>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d1 }}</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d2 }}</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d3 }}</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d4 }}</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d5 }}</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d6 }}</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d7 }}</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d8 }}</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d9 }}</p>
+                      <p style="margin-bottom: 0px !important" class="text-center">{{ obj.d10 }}</p>
+                    </td>
+                  </tr>
+              </table>
+              <p style="margin-bottom: 0px !important">Первоубиенный: <b>{{ obj.p_lh }}</b></p>
+              {% if obj.lh1 == 0 and obj.lh2 == 0 and obj.lh3 == 0 %}
+              <p style="margin-bottom: 0px !important">Лучший ход: <b>Нет</b></p>
+              {% else %}
+              <p style="margin-bottom: 0px !important">Лучший ход: <b>{{ obj.lh1 }} {{ obj.lh2 }} {{ obj.lh3 }}</b></p>
+              {% endif %}
+
+              <p style="margin-bottom: 0px !important">Записал: <b>{{ obj.bestmove }}</b></p>
+          </div>
+        </div>
+      </div>
+
+    {% endfor %}
+    
+    </div>
+  {% endif %}    
+
+{% endblock content %}
